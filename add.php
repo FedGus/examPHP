@@ -14,13 +14,13 @@
         }
 
         $sql_res = mysqli_query($mysqli, 'INSERT INTO zakaz (client, color, format, density, tiraz, status) VALUES ("'.htmlspecialchars($_SESSION['id']).'", "'.htmlspecialchars($_POST['color']).'", "'.htmlspecialchars($_POST['format']).'", "'.htmlspecialchars($_POST['thickness']).'", "'.htmlspecialchars($_POST['quantity']).'", "1");');
-
         if (mysqli_errno($mysqli)) {
             echo '<div class="error">Запись не добавлена</div>';
             echo mysqli_errno($mysqli);
         }
         else echo '<div class="ok">Заказ добавлен</div>';
     }
+           
 ?>
 <form method="POST" action="noindex.php?p=add">
             <h2 class="row">Введите параметры заказа</h2>
@@ -50,7 +50,13 @@
                 <option value="4">150 г/м2</option>
             </select><br>
             <label for="quantity">Введите необходимый тираж (количество):</label><br>
-            <input name="quantity" type="number" required><br>
+            <input name="quantity" type="number" required min="0" max="<?php 
+            $mysqli = mysqli_connect('localhost', 'root', '', 'print');
+            $sql_sum = mysqli_query($mysqli, 'SELECT SUM(count) FROM paper'); 
+            while ($row = mysqli_fetch_assoc($sql_sum)) {
+                echo $row['SUM(count)'];
+            } 
+                 ?>"><br>
             <center><button>Рассчитать</button><button type="submit" name="btn" value="Оформить заказ">Оформить заказ</button></center>
             <?php
             // Здесь выбирается цветность

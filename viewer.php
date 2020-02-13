@@ -7,6 +7,10 @@
 		if (mysqli_connect_errno()) {
 			echo '<h1>Ошибка подключения к БД:'.mysqli_connect_error().'</h1>';
 		}
+		if (isset($_GET['id_order'])) {
+			$sql_res = mysqli_query($mysqli, 'DELETE FROM zakaz WHERE id_order="'.$_GET['id_order'].'"');
+			echo '<div class="error">Удалено</div>';
+		}
 		$sql_res = mysqli_query($mysqli, 'SELECT count(*) FROM zakaz_new');
 
 		//$row = mysqli_fetch_assoc($sql_res); 
@@ -30,7 +34,7 @@
 					$res_arr = array();
 					while ($row = mysqli_fetch_assoc($sql_res)) {
 						$serial++;
-						$ret.='<tr><td>'.$serial.'</td><td>'.$row['client'].'</td><td>'.$row['color'].'</td><td>'.$row['format'].'</td><td>'.$row['density'].'</td><td>'.$row['tiraz'].'</td><td>'.$row['status'].'</td></tr>';
+						$ret.='<tr><td>'.$serial.'</td><td>'.$row['client'].'</td><td>'.$row['color'].'</td><td>'.$row['format'].'</td><td>'.$row['density'].'</td><td>'.$row['tiraz'].'</td><td>'.$row['status'].'</td><td><form method="GET"><input name="id_order" type="hidden" value="'.$row['id_order'].'"><button type="submit">Удалить</button></form></td></tr>';
 						//$index=$row['secondname'];
 						//$res_arr = array($index => '<tr><td>'.$serial.'</td><td>'.$row['secondname'].'</td><td>'.$row['firstname'].'</td><td>'.$row['patronymic'].'</td><td>'.$row['sex'].'</td><td>'.$row['birthday'].'</td><td>'.$row['phone'].'</td><td>'.$row['addres'].'</td><td>'.$row['email'].'</td><td>'.$row['comment'].'</td></tr>');
 					} 
@@ -67,7 +71,13 @@
 				} else {
 					return 'Что-то пошло не так';
 	}
-	mysql_close($mysqli);
+	if (mysqli_connect_errno()) {
+        echo 'Ошибка подключения к базе данных:'.mysqli_connect_error();
+        exit();
+    }
+    	mysql_close($mysqli);
 
+
+    
 	}
 ?>

@@ -45,7 +45,13 @@
                 <option value="4">150 г/м2</option>
             </select><br>
             <label for="quantity">Введите необходимый тираж (количество):</label><br>
-            <input name="quantity" type="number" required><br>
+            <input name="quantity" type="number" required min="0" max="<?php
+            $mysqli = mysqli_connect('localhost', 'root', '', 'print');
+            $sql_sum = mysqli_query($mysqli, 'SELECT SUM(count) FROM paper'); 
+            while ($row = mysqli_fetch_assoc($sql_sum)) {
+                echo $row['SUM(count)'];
+            } 
+            ?>"><br>
             <button>Рассчитать</button>
         </form>
         </div>

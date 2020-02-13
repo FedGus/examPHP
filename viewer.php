@@ -1,3 +1,9 @@
+<?php
+    session_start(); 
+    if( !isset($_SESSION['id']) ) {
+        $_SESSION['id']=$_GET['id'];
+    }
+?> 
 <?php  
 	
 	function getList ($type, $page) {
@@ -24,7 +30,8 @@
 						$page=$TOTAL-1;
 					}
 					$prev_page=($page*10)-10;
-					$sql = 'SELECT * FROM zakaz_new ';
+					
+					$sql = 'SELECT * FROM zakaz_new';
 					//if ($_GET['sub']=='name') $sql .= 'ORDER BY secondname';
 					//$sql .=' LIMIT '.$prev_page.', '.$page.'0 ';
 					$sql_res = mysqli_query($mysqli, $sql);

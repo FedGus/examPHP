@@ -15,8 +15,8 @@
 		echo '<a href="?p=edit"';
 		if ($_GET['p']=='edit') echo 'class="selected"';
 		echo ">Редактирование заказа</a>";
-		echo '<a href="?p=delete"';
-		/*if ($_GET['p']=='delete') echo 'class="selected"';
+		/*echo '<a href="?p=delete"';
+		if ($_GET['p']=='delete') echo 'class="selected"';
 		echo ">Удаление заказа</a>";*/
 		echo '<a href="create-pdf.php">Создать счёт в PDF</a>';
 		echo '<a href="index.php">Выйти</a>';

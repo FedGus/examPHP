@@ -8,8 +8,8 @@
 
     echo '<h1 сlass="head" style="font-family: sans-serif; margin: 10px 15px; border-bottom: 1px solid black; width: 40vw;">Редактировать</h1><ul class="edit_links">';
        
-    if ((isset($_POST['btn'])) && ($_POST['btn']='Изменить запись')) {
-        $sql_res = mysqli_query($mysqli, 'UPDATE zakaz SET color="'.htmlspecialchars($_POST['color']).'", format="'.htmlspecialchars($_POST['format']).'", density="'.htmlspecialchars($_POST['density']).'", tiraz="'.htmlspecialchars($_POST['tiraz']).'", status="'.htmlspecialchars($_POST['status']).'" WHERE id_order="'.$_POST['id_order'].'";');
+    if ((isset($_POST['btn']) && isset($_GET['id_order']))) {
+        $sql_res = mysqli_query($mysqli, 'UPDATE zakaz SET color="'.htmlspecialchars($_POST['color']).'", format="'.htmlspecialchars($_POST['format']).'", density="'.htmlspecialchars($_POST['density']).'", tiraz="'.htmlspecialchars($_POST['tiraz']).'", status="'.htmlspecialchars($_POST['status']).'" WHERE id_order="'.htmlspecialchars($_GET['id_order']).'";');
         echo '<div class="ok">Данные отредактированы</div>';
         $_GET['id_order']=$_POST['id_order'];
     }
@@ -27,7 +27,7 @@
         echo '</li></ul>';
 
         echo '<form class="editForm" action="?p=edit&id_order='.$currentROW['id_order'].'" method="POST">
-        <select name="color" id="color">';
+        <label for="color">Цветность:</label><select name="color" id="color">';
         if ($currentROW) {
             $sql_color = mysqli_query($mysqli, 'SELECT id_colors, colors FROM colors;');
             while ($row = mysqli_fetch_assoc($sql_color)) {
@@ -38,7 +38,7 @@
                 echo ' >'.$row['colors'].'</option>';
             } 
         }
-        echo ' </select><br><select name="format" id="format">';
+        echo ' </select><br><label for="format">Формат:</label><select name="format" id="format">';
         if ($currentROW) {
             $sql_format = mysqli_query($mysqli, 'SELECT id_format, format FROM formats;');
             while ($row = mysqli_fetch_assoc($sql_format)) {
@@ -49,7 +49,7 @@
                 echo ' >'.$row['format'].'</option>';
             } 
         }
-        echo '</select><br><select name="density" id="density">';
+        echo '</select><br><label for="density">Плотность бумаги:</label><select name="density" id="density">';
         if ($currentROW) {
             $sql_density = mysqli_query($mysqli, 'SELECT id_density, density FROM density;');
             while ($row = mysqli_fetch_assoc($sql_density)) {
@@ -60,26 +60,30 @@
                 echo ' >'.$row['density'].'</option>';
             } 
         }
-        echo '</select><br><input name="tiraz" type="text"';
-        if ($currentROW) {
-            echo 'value="'.$currentROW['tiraz'].'"';
-        }
-         echo '><br><select name="status" id="status">';
+        echo '</select><br><label for="tiraz">Тираж (количество):</label><input name="tiraz" type="number" id="tiraz" min="0" max="';
+            $sql_sum = mysqli_query($mysqli, 'SELECT SUM(count) FROM paper'); 
+            while ($row = mysqli_fetch_assoc($sql_sum)) {
+                echo $row['SUM(count)'];
+            } 
+            if ($currentROW) {
+                echo '" value="'.$currentROW['tiraz'].'"';
+            }
+         echo '><br><label for="status">Статус:</label><select name="status" id="status">';
         if ($currentROW) {
             $sql_status = mysqli_query($mysqli, 'SELECT id_status, name FROM status;');
             while ($row = mysqli_fetch_assoc($sql_status)) {
-                echo '<option value="'.$row['id_density'].'" ';
+                echo '<option value="'.$row['id_status'].'" ';
                 
                     if ($row['name'] == $currentROW['status']) echo 'selected';
                 
                 echo ' >'.$row['name'].'</option>';
             } 
         }
-        echo '</select><br><input type="submit" name="btn" value="Изменить запись"><input type="hidden" name="id" value=" ';
+        echo '</select><br><input type="hidden" name="id" value=" ';
         if ($currentROW) {
             echo $currentROW['id_order'];
         }
-        echo '">
+        echo '"><input type="submit" name="btn" value="Изменить запись">
         <div>* - поля, обязательные к заполнению</div>
         </form>';
         if (!$currentROW) {

@@ -43,14 +43,14 @@ PDF_continue_text($p, $_POST['price-format']);
 PDF_continue_text($p, '');
 
 PDF_continue_text($p, 'Thickness of list:');
-PDF_continue_text($p, $_POST['thickness']);
+PDF_continue_text($p, $_POST['density']);
 PDF_continue_text($p, 'Cost of thickness of list:');
 PDF_continue_text($p, $_POST['price-thickness']);
 
 PDF_continue_text($p, '');
 
 PDF_continue_text($p, 'Number:');
-PDF_continue_text($p, $_POST['quantity']);
+PDF_continue_text($p, $_POST['tiraz']);
 PDF_continue_text($p, 'Cost number of list:');
 PDF_continue_text($p, $_POST['price-quantity']);
 

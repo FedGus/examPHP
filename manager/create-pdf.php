@@ -8,71 +8,95 @@
 <body> 
     <div id="wrap"><div> 
     <h3>Создание счёта</h3>
-    <form method="post" action="create_receipt.php"> 
-    <fieldset> 
-    <legend>Счёт</legend> 
-    <div class="col"> 
-        <p> 
-            <label for="name">Введите ФИО</label> 
-            <input type="text" name="name" placeholder="Фамилия Имя Отчество" /> 
-        </p> 
-        <p> 
-            <label for="email">Введите стоимость</label> 
-            <input type="text" name="cost" placeholder="1000" /> 
-        </p> 
-    </div> 
-    </fieldset>
-    <fieldset> 
-    <legend>Детали</legend> 
-    <table> 
-        <thead> 
-            <tr><td>Позиция</td><td>Стоимость</td></tr> 
-        <thead> 
-        <tbody> 
-            <tr> 
-                <td>Цветность:
-                    <select name="color" id="color">
-                        <option disabled>Не выбрано</option>
-                        <option value="1">4+4 - цветная с двух сторон</option>
-                        <option value="2">4+1 - цветная и черно-белая</option>
-                        <option value="3">4+0 - цветная с одной стороны</option>
-                        <option value="4">1+0 - черно-белая с одной стороны</option>
-                    </select>
-                </td> 
-                <td><input type='text' name='price-color' /> Рублей</td> 
-            </tr> 
-            <tr> 
-                <td>Формат:
-                    <select name="format" id="format">
-                        <option disabled>Не выбрано</option>
-                        <option value="1">A5</option>
-                        <option value="2">A4</option>
-                        <option value="3">A3</option>
-                        <option value="4">A2</option>
-                    </select>
-                </td> 
-                <td><input type='text' name='price-format'/> Рублей</td> 
-            </tr> 
-            <tr> 
-            <td>Плотность:
-                <select name="thickness" id="thickness">
-                    <option disabled>Не выбрано</option>
-                    <option value="1">80 г/м2</option>
-                    <option value="2">115 г/м2</option>
-                    <option value="3">130 г/м2</option>
-                    <option value="4">150 г/м2</option>
-                </select>
-            </td> 
-                <td><input type='text' name='price-format'/> Рублей</td> 
-            </tr> 
-            <tr> 
-            <td>Тираж: <input name="quantity" type="number" required><br></td> 
-                <td><input type='text' name='price-format'/> Рублей</td> 
-            </tr> 
-        </tbody> 
-        </table> 
-    </fieldset>
-    <button type="submit">Сформировать счёт</button>
-    </form> 
-</div>
-</div>
+    <?php 
+    $mysqli = mysqli_connect('localhost', 'root', '', 'print');
+
+    if (mysqli_connect_errno()) {
+        echo 'Ошибка подключения к базе данных:'.mysqli_connect_error();
+        exit();
+    }
+
+    echo '<h1 сlass="head" style="font-family: sans-serif; margin: 10px 15px; border-bottom: 1px solid black; width: 40vw;">Создать счет</h1><ul class="edit_links">';
+       
+   
+    $sql_res = mysqli_query($mysqli, 'SELECT * FROM zakaz_new ORDER BY id_order');
+    if (!mysqli_errno($mysqli)) {
+        $currentROW = array();
+         while ($row=mysqli_fetch_assoc($sql_res)) {
+            if ((!$currentROW) && ((!isset($_GET['id_order']))||($_GET['id_order']==$row['id_order']))) {
+                $currentROW=$row;
+                echo '<li style="padding: 10px 15px;">Заказ №'.$row['id_order'].' - '.$row['client'].'</li>';
+            } else {
+                echo '<li><a href="?p=edit&id_order='.$row['id_order'].'">Заказ №'.$row['id_order'].' - '.$row['client'].'</li></a>';
+            }
+        }
+        echo '</li></ul>';
+
+        echo '<form class="editForm" action="create_receipt.php" method="POST">
+        <label for="color">Цветность:</label><select name="color" id="color">';
+        if ($currentROW) {
+            $sql_color = mysqli_query($mysqli, 'SELECT id_colors, colors FROM colors;');
+            while ($row = mysqli_fetch_assoc($sql_color)) {
+                echo '<option value="'.$row['id_colors'].'" ';
+                
+                    if ($row['colors'] == $currentROW['color']) echo 'selected';
+                
+                echo ' >'.$row['colors'].'</option>';
+            } 
+        }
+        echo ' </select><br><label for="format">Формат:</label><select name="format" id="format">';
+        if ($currentROW) {
+            $sql_format = mysqli_query($mysqli, 'SELECT id_format, format FROM formats;');
+            while ($row = mysqli_fetch_assoc($sql_format)) {
+                echo '<option value="'.$row['id_format'].'" ';
+                
+                    if ($row['format'] == $currentROW['format']) echo 'selected';
+                
+                echo ' >'.$row['format'].'</option>';
+            } 
+        }
+        echo '</select><br><label for="density">Плотность бумаги:</label><select name="density" id="density">';
+        if ($currentROW) {
+            $sql_density = mysqli_query($mysqli, 'SELECT id_density, density FROM density;');
+            while ($row = mysqli_fetch_assoc($sql_density)) {
+                echo '<option value="'.$row['id_density'].'" ';
+                
+                    if ($row['density'] == $currentROW['density']) echo 'selected';
+                
+                echo ' >'.$row['density'].'</option>';
+            } 
+        }
+        echo '</select><br><label for="tiraz">Тираж (количество):</label><input name="tiraz" type="number" id="tiraz" min="0" max="';
+            $sql_sum = mysqli_query($mysqli, 'SELECT SUM(count) FROM paper'); 
+            while ($row = mysqli_fetch_assoc($sql_sum)) {
+                echo $row['SUM(count)'];
+            } 
+            if ($currentROW) {
+                echo '" value="'.$currentROW['tiraz'].'"';
+            }
+         echo '><br><label for="status">Статус:</label><select name="status" id="status">';
+        if ($currentROW) {
+            $sql_status = mysqli_query($mysqli, 'SELECT id_status, name FROM status;');
+            while ($row = mysqli_fetch_assoc($sql_status)) {
+                echo '<option value="'.$row['id_status'].'" ';
+                
+                    if ($row['name'] == $currentROW['status']) echo 'selected';
+                
+                echo ' >'.$row['name'].'</option>';
+            } 
+        }
+        echo '</select><br><input type="hidden" name="id" value=" ';
+        if ($currentROW) {
+            echo $currentROW['id_order'];
+        }
+        echo '"><input type="submit" name="btn" value="Создать счет">
+        <div>* - поля, обязательные к заполнению</div>
+        </form>';
+        if (!$currentROW) {
+            echo 'Нет записей';
+        }
+    } else {
+        echo 'Неизвестная ошибка';
+    }
+    print_r($curre);
+?>

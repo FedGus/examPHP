@@ -32,7 +32,7 @@
                     echo 'Ошибка подключения к БД:'.mysqli_connect_error();
                 }
 
-                $sql_res = mysqli_query($mysqli, 'INSERT INTO client (FIO, login, pass) VALUES ("'.htmlspecialchars($_POST['FIO']).'", "'.htmlspecialchars($_POST['login']).'", "'.$pass_hash.'");');
+                $sql_res = mysqli_query($mysqli, 'INSERT INTO client (FIO, login, pass, role) VALUES ("'.htmlspecialchars($_POST['FIO']).'", "'.htmlspecialchars($_POST['login']).'", "'.$pass_hash.'", "P");');
                 if (mysqli_errno($mysqli)) {
                     echo '<div class="error">Запись не добавлена</div>';
                     echo mysqli_errno($mysqli);

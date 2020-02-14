@@ -34,21 +34,26 @@
                 echo 'Ошибка подключения к БД:'.mysqli_connect_error();
             }
 
-            $sql_res = mysqli_query($mysqli, 'SELECT id_client, login, pass FROM client');
+            $sql_res = mysqli_query($mysqli, 'SELECT id_client, login, pass, role FROM client');
             for ($i=0; $i < mysqli_num_rows($sql_res); $i++) {
                 $row = mysqli_fetch_array($sql_res, MYSQLI_ASSOC);
                 // print_r($row);
                 $adm_id = $row['id_client'];
                 $adm_log = $row['login'];
                 $adm_pass = $row['pass'];
+                $adm_role = $row['role'];
                 // echo '<br>'.$adm_log.' '.$adm_pass;
+                if(password_verify($_POST['pass'], $adm_pass) == TRUE && $_POST['login'] == $adm_log && $adm_role == "M") {
+                    echo "<script>window.location = 'manager/manindex.php?id=".$adm_id."';</script>";
+                } else if (password_verify($_POST['pass'], $adm_pass) == TRUE && $_POST['login'] == $adm_log && $adm_role == "P") {
+                    echo "<script>window.location = 'client/noindex.php?id=".$adm_id."';</script>";
+                }
+                else {
+                    //echo 'Неправильный логин или пароль';
+                }
             }
 
-            if(password_verify($_POST['pass'], $adm_pass) == TRUE && $_POST['login'] == $adm_log)
-                echo "<script>window.location = 'noindex.php?id=".$adm_id."';</script>";
-            else {
-                echo 'Неправильный логин или пароль';
-            }
+            
     ?>
     </main>
     <footer>
